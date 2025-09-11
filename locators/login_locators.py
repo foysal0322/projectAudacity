@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 class LoginLocators:
     EMAIL_INPUT = (By.ID, 'email')
     PASSWORD_INPUT = (By.ID, 'password')
-    LOGIN_BUTTON = (By.XPATH, "//*[contains(text(), 'Login')]")
+    LOGIN_BUTTON = (By.XPATH, "//button[contains(text(), 'Login')]")
     ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'toaster') and contains(@class,'bg-white')]")
     REGISTRATION_LINK = (By.LINK_TEXT, 'Registration')
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, 'Forgot Password')
