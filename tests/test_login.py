@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -39,13 +41,13 @@ def test_negative_login(login_page):
 
 def test_navigation_to_registration(login_page):
     login_page.go_to_registration()
-    assert "register" in login_page.driver.current_url.lower()
-    login_page.go_to(URL)  # Return to login for next tests
+    assert "registration" in login_page.driver.current_url.lower()
+
 
 def test_navigation_to_forgot_password(login_page):
     login_page.go_to_forgot_password()
-    assert "forgot" in login_page.driver.current_url.lower()
-    login_page.go_to(URL)
+    assert "forgot-password" in login_page.driver.current_url.lower()
+
 
 def test_fields_and_buttons_present(login_page):
     assert login_page.is_field_present(LoginLocators.EMAIL_INPUT)

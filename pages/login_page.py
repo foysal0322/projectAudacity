@@ -1,5 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from locators.login_locators import LoginLocators
 from .base_page import BasePage
@@ -23,9 +25,11 @@ class LoginPage(BasePage):
 
     def go_to_registration(self):
         self.driver.find_element(*LoginLocators.REGISTRATION_LINK).click()
+        WebDriverWait(self.driver, 10).until(EC.url_contains('/registration'))
 
     def go_to_forgot_password(self):
         self.driver.find_element(*LoginLocators.FORGOT_PASSWORD_LINK).click()
+        WebDriverWait(self.driver, 10).until(EC.url_contains('/forgot-password'))
 
     def is_field_present(self, locator):
         try:
@@ -50,4 +54,3 @@ class LoginPage(BasePage):
     def feedback_in_list(self, feedback_text):
         feedback_list = self.driver.find_element(*LoginLocators.FEEDBACK_LIST)
         return feedback_text in feedback_list.text
-
