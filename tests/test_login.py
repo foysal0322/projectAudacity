@@ -15,10 +15,10 @@ INVALID_PASSWORD = "WrongPass"
 @pytest.fixture(scope="module")
 def driver():
     options = Options()
-    # options.add_argument('--headless')
-    options.add_argument('--start-fullscreen')
+    options.add_argument('--headless')
+    options.add_argument('--window-size=1920,1080')
+    options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=options)
-    # driver.fullscreen_window()
     driver.implicitly_wait(10)  # Wait up to 10 seconds for elements to appear
     yield driver
     driver.quit()
@@ -57,8 +57,8 @@ def test_fields_and_buttons_present(login_page):
     assert login_page.is_field_present(LoginLocators.FORGOT_PASSWORD_LINK)
 
 def test_password_field_masking_and_autocomplete(login_page):
-    assert login_page.is_password_masked()
-    assert login_page.is_password_autocomplete_off()
+    assert login_page.is_password_masked() == True
+    assert login_page.is_password_autocomplete_off() == True
 
 def test_leave_feedback(login_page):
     feedback_text = "Automated feedback test"
