@@ -1,0 +1,143 @@
+login_page = <pages.login_page.LoginPage object at 0x000001ADB49F2510>
+
+    @pytest.mark.login
+    def test_password_field_masking_and_autocomplete(login_page):
+        assert login_page.is_password_masked() == True
+>       assert login_page.is_password_autocomplete_off() == True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_login.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\pages\login_page.py:82: in is_password_autocomplete_off
+    if password_field.get_attribute('value') == '':
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\selenium\webdriver\remote\webelement.py:232: in get_attribute
+    attribute_value = self.parent.execute_script(
+..\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:555: in execute_script
+    return self.execute(command, {"script": script, "args": converted_args})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:458: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001ADB50841A0>
+response = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"stale element reference: stale elemen...ff79347f048+11176]\\n\\tBaseThreadInitThunk [0x0x7ffb8eb77374+20]\\n\\tRtlUserThreadStart [0x0x7ffb8efdcc91+33]\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -> None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message")
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "<anonymous>")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "<anonymous>")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+>       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.StaleElementReferenceException: Message: stale element reference: stale element not found
+E         (Session info: chrome=140.0.7339.128); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception
+E       Stacktrace:
+E       	GetHandleVerifier [0x0x7ff79348fc95+79861]
+E       	GetHandleVerifier [0x0x7ff79348fcf0+79952]
+E       	(No symbol) [0x0x7ff79320cada]
+E       	(No symbol) [0x0x7ff793223295]
+E       	(No symbol) [0x0x7ff793221d83]
+E       	(No symbol) [0x0x7ff793215377]
+E       	(No symbol) [0x0x7ff7932154f1]
+E       	(No symbol) [0x0x7ff793213230]
+E       	(No symbol) [0x0x7ff793217a51]
+E       	(No symbol) [0x0x7ff7932b630b]
+E       	(No symbol) [0x0x7ff79328cada]
+E       	(No symbol) [0x0x7ff7932b4f8b]
+E       	(No symbol) [0x0x7ff79328c8b3]
+E       	(No symbol) [0x0x7ff793255272]
+E       	(No symbol) [0x0x7ff793256043]
+E       	GetHandleVerifier [0x0x7ff79374b9cd+2946349]
+E       	GetHandleVerifier [0x0x7ff793745c4a+2922410]
+E       	GetHandleVerifier [0x0x7ff7937659d7+3052855]
+E       	GetHandleVerifier [0x0x7ff7934aaa7e+189918]
+E       	GetHandleVerifier [0x0x7ff7934b2a1f+222591]
+E       	GetHandleVerifier [0x0x7ff793498ab4+116244]
+E       	GetHandleVerifier [0x0x7ff793498c69+116681]
+E       	GetHandleVerifier [0x0x7ff79347f048+11176]
+E       	BaseThreadInitThunk [0x0x7ffb8eb77374+20]
+E       	RtlUserThreadStart [0x0x7ffb8efdcc91+33]
+
+..\.venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py:232: StaleElementReferenceException
