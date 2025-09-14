@@ -81,5 +81,5 @@ Project Audacity is an automated web testing suite built with Python, Selenium, 
 See the `LICENSE` file for license details.
 
 ---
-For any issues or contributions, please open an issue or pull request on the repository.
+For any issues or contributions, please open an issue or pull request on the repository. Or Email me at: `foysal0322@gmail.com`
 
