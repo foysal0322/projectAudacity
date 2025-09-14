@@ -19,6 +19,7 @@ def test_login(ecommerce_page):
     """Test login functionality on the e-commerce site with valid credentials."""
     ecommerce_page.login(VALID_EMAIL, VALID_PASSWORD)
     assert ecommerce_page.get_success_message() == True
+    ecommerce_page.logout()
 
 @pytest.mark.ecommerce
 @pytest.mark.positive
@@ -27,6 +28,8 @@ def test_add_to_cart(ecommerce_page):
     ecommerce_page.login(VALID_EMAIL, VALID_PASSWORD)
     ecommerce_page.add_first_product_to_cart()
     assert ecommerce_page.get_cart_count() > 0
+    ecommerce_page.logout()
+
 
 @pytest.mark.ecommerce
 @pytest.mark.positive
@@ -36,6 +39,7 @@ def test_add_to_favorites(ecommerce_page):
     ecommerce_page.add_first_product_to_favorites()
     assert ecommerce_page.get_favorites_btn_color() == "color: rgb(255, 0, 0);"
     assert ecommerce_page.get_favorites_success_messege() == "Added to favorites"
+    ecommerce_page.logout()
 
 @pytest.mark.ecommerce
 @pytest.mark.positive
@@ -44,6 +48,7 @@ def test_sort_products(ecommerce_page):
     ecommerce_page.login(VALID_EMAIL, VALID_PASSWORD)
     ecommerce_page.sort_products()
     assert ecommerce_page.get_product_prices() == sorted(ecommerce_page.get_product_prices())
+    ecommerce_page.logout()
 
 @pytest.mark.ecommerce
 @pytest.mark.positive
@@ -53,3 +58,4 @@ def test_checkout_flow(ecommerce_page):
     ecommerce_page.add_first_product_to_cart()
     ecommerce_page.proceed_to_checkout()
     assert ecommerce_page.check_is_text_visible('Checkout: Complete!') == True
+    ecommerce_page.logout()

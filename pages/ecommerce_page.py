@@ -25,6 +25,7 @@ class EcommercePage:
     FIRST_NAME = (By.XPATH, "//input[contains(@placeholder,'Ex. John')]")
     SUCCESS_MESSAGE = (By.XPATH, "//*[contains(@class,'user-name')]")
     ERROR_MESSAGE = (By.CSS_SELECTOR, '.alert-danger, .error-message')
+    USER_NAME_DISPLAY = (By.XPATH, "//*[contains(@class,'user-name')]")
 
     def click_by_text(self, text):
         """Scroll to and click the element containing the specified text."""
@@ -43,11 +44,21 @@ class EcommercePage:
 
     def login(self, email, password):
         """Log in to the e-commerce site with the provided email and password."""
+        # wait for EMAIL_INPUT to be visible
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.EMAIL_INPUT))
         self.driver.find_element(*self.EMAIL_INPUT).clear()
         self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
         self.driver.find_element(*self.PASSWORD_INPUT).clear()
         self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
         self.driver.find_element(*self.LOGIN_BUTTON).click()
+
+    def logout(self):
+        """Log out from the e-commerce site."""
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.USER_NAME_DISPLAY))
+        self.driver.execute_script("window.scrollTo(0, 0);")
+        self.driver.find_element(*self.USER_NAME_DISPLAY).click()
+        self.click_by_text('Log out')
+        self.click_by_text('Logout')
 
     def add_first_product_to_cart(self):
         """Add the first product in the product list to the cart."""
@@ -103,3 +114,8 @@ class EcommercePage:
             return True
         except:
             return False
+
+    def teardown(self):
+        """Tear down the browser session by quitting the driver."""
+        if self.driver:
+            self.driver.quit()
