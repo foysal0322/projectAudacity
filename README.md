@@ -68,6 +68,40 @@ Project Audacity is an automated web testing suite built with Python, Selenium, 
     - `browser_console.log`: Browser console logs
     - `error.log`: Error details
 
+## GUI Test Runner
+
+A professional, user-friendly GUI test runner is included for easy test execution and management.
+
+### Features
+- Select test suites by pytest mark (or run all)
+- Choose browser (Chrome, Firefox, Edge, Mobile Chrome, Mobile Safari)
+- Toggle headless mode and parallel execution (multi-threaded)
+- Specify rerun count for failed tests (requires pytest-rerunfailures)
+- Option to generate HTML reports
+- Kill switch to stop all running tests
+- Real-time terminal output canvas
+- All controls are disabled while tests are running for safety
+
+### How to Use
+1. **Install PyQt5 and required plugins:**
+   ```bash
+   pip install PyQt5 pytest-html pytest-xdist pytest-rerunfailures
+   ```
+2. **Run the GUI:**
+   ```bash
+   python test_runner_gui.py
+   ```
+3. **Select your options:**
+   - Choose test suite, browser, headless/parallel, rerun count, and report options.
+   - Click **Run** to start. Use the **Kill** button to stop tests at any time.
+   - The terminal canvas will show real-time output.
+
+### Notes
+- For parallel execution, pytest-xdist must be installed.
+- For rerun support, pytest-rerunfailures must be installed.
+- For HTML reports, pytest-html must be installed.
+- All options are available in the GUI for a seamless experience.
+
 ## Additional Notes
 - **Test Data:** Test credentials and data are hardcoded for demo purposes. Update as needed for your environment.
 - **Extending Tests:** Add new test files in `tests/` and new page objects in `pages/`.
@@ -82,4 +116,3 @@ See the `LICENSE` file for license details.
 
 ---
 For any issues or contributions, please open an issue or pull request on the repository. Or Email me at: `foysal0322@gmail.com`
-
