@@ -1,27 +1,11 @@
 import pytest
 from pages.login_page import LoginPage
-from locators.login_locators import LoginLocators
 
 URL = "https://practice.qabrains.com/"
 VALID_EMAIL = "qa_testers@qabrains.com"
 VALID_PASSWORD = "Password123"
 INVALID_EMAIL = "invalid@qabrains.com"
 INVALID_PASSWORD = "WrongPass"
-
-@pytest.mark.login
-@pytest.fixture(scope="module")
-def driver():
-    """Fixture to initialize and provide a Selenium WebDriver instance for login tests."""
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument('--start-maximized')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
 
 @pytest.mark.login
 @pytest.fixture
@@ -63,11 +47,11 @@ def test_navigation_to_forgot_password(login_page):
 @pytest.mark.login
 def test_fields_and_buttons_present(login_page):
     """Test that all necessary fields and buttons are present on the login page."""
-    assert login_page.is_field_present(LoginLocators.EMAIL_INPUT)
-    assert login_page.is_field_present(LoginLocators.PASSWORD_INPUT)
-    assert login_page.is_field_present(LoginLocators.LOGIN_BUTTON)
-    assert login_page.is_field_present(LoginLocators.REGISTRATION_LINK)
-    assert login_page.is_field_present(LoginLocators.FORGOT_PASSWORD_LINK)
+    assert login_page.is_field_present(LoginPage.EMAIL_INPUT)
+    assert login_page.is_field_present(LoginPage.PASSWORD_INPUT)
+    assert login_page.is_field_present(LoginPage.LOGIN_BUTTON)
+    assert login_page.is_field_present(LoginPage.REGISTRATION_LINK)
+    assert login_page.is_field_present(LoginPage.FORGOT_PASSWORD_LINK)
 
 @pytest.mark.login
 def test_password_field_masking_and_autocomplete(login_page):
