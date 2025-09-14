@@ -1,5 +1,3 @@
-import time
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -23,39 +21,54 @@ class FormPage:
     MISSING_ERROR_MESSAGE = (By.XPATH, "//*[contains(@class,'text-red-500') and normalize-space(text())='Name is a required field']")
     INVALID_ERROR_MESSAGE = (By.XPATH, "//*[contains(@class,'text-red-500') and normalize-space(text())='Email must be a valid email']")
 
+    def robust_click(self, locator):
+        """Click an element, using JS as fallback if click is intercepted."""
+        from selenium.common.exceptions import ElementClickInterceptedException
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(locator))
+        elem = self.driver.find_element(*locator)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", elem)
+        try:
+            elem.click()
+        except ElementClickInterceptedException:
+            self.driver.execute_script("arguments[0].click();", elem)
+
     def fill_form(self, name, email, contact_no):
+        # Name
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.NAME_INPUT))
-        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
         name_input = self.driver.find_element(*self.NAME_INPUT)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", name_input)
+        name_input.click()
         name_input.clear()
         name_input.send_keys(name)
+        # Email
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.EMAIL_INPUT))
         email_input = self.driver.find_element(*self.EMAIL_INPUT)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", email_input)
+        email_input.click()
         email_input.clear()
         email_input.send_keys(email)
+        # Contact
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.CONTACT_NO))
         contact_input = self.driver.find_element(*self.CONTACT_NO)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", contact_input)
+        contact_input.click()
         contact_input.clear()
         contact_input.send_keys(contact_no)
-
+        # File upload
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.UPLOAD_FILE))
-        self.driver.find_element(*self.UPLOAD_FILE).send_keys("C:/Users/Toufik/OneDrive/Desktop/images.png")
-
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.SELECT_RED))
-        self.driver.find_element(*self.SELECT_RED).click()
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.SELECT_PASTA))
-        self.driver.find_element(*self.SELECT_PASTA).click()
-
-        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(1)
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.SELECT_COUNTRY))
-        self.driver.find_element(*self.SELECT_COUNTRY).click()
-        time.sleep(1)
-        self.driver.find_element(*self.SELECT_BANGLADESH).click()
-        self.driver.find_element(*self.SUBMIT_BTN).click()
-
-
+        upload_input = self.driver.find_element(*self.UPLOAD_FILE)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", upload_input)
+        upload_input.send_keys("C:/Users/Toufik/OneDrive/Desktop/images.png")
+        # Select Red
+        self.robust_click(self.SELECT_RED)
+        # Select Pasta
+        self.robust_click(self.SELECT_PASTA)
+        # Select Country
+        self.robust_click(self.SELECT_COUNTRY)
+        # Select Bangladesh
+        self.robust_click(self.SELECT_BANGLADESH)
+        # Submit
+        self.robust_click(self.SUBMIT_BTN)
 
     def get_success_message(self):
         try:
