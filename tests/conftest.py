@@ -1,17 +1,51 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 import os
 from datetime import datetime
 
+def pytest_addoption(parser):
+    parser.addoption('--browser', action='store', default='chrome', help='Browser to use: chrome, firefox, edge')
+    parser.addoption('--headless', action='store_true', default=False, help='Run browser in headless mode')
+    parser.addoption('--mobile', action='store_true', default=False, help='Emulate mobile device')
+
 @pytest.fixture(scope="session")
-def driver():
-    options = Options()
-    # options.add_argument('--headless')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument('--start-maximized')
-    options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
-    driver = webdriver.Chrome(options=options)
+def driver(request):
+    browser = request.config.getoption('--browser').lower()
+    headless = request.config.getoption('--headless')
+    mobile = request.config.getoption('--mobile')
+    driver = None
+    if browser == 'chrome':
+        options = ChromeOptions()
+        if headless:
+            options.add_argument('--headless')
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--start-maximized')
+        options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
+        if mobile:
+            mobile_emulation = {"deviceName": "Pixel 2"}
+            options.add_experimental_option("mobileEmulation", mobile_emulation)
+        driver = webdriver.Chrome(options=options)
+    elif browser == 'firefox':
+        options = FirefoxOptions()
+        if headless:
+            options.add_argument('--headless')
+        if mobile:
+            options.set_preference("general.useragent.override", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1")
+        driver = webdriver.Firefox(options=options)
+    elif browser == 'edge':
+        options = EdgeOptions()
+        if headless:
+            options.add_argument('--headless')
+        options.add_argument('--window-size=1920,1080')
+        if mobile:
+            # Edge does not support mobile emulation directly, fallback to user-agent
+            options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1")
+        driver = webdriver.Edge(options=options)
+    else:
+        raise ValueError(f"Unsupported browser: {browser}")
     driver.implicitly_wait(10)
     yield driver
     driver.quit()
